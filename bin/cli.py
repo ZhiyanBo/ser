@@ -1,5 +1,8 @@
+from ast import Not
 from datetime import datetime
 from pathlib import Path
+from os import listdir
+import pandas as pd
 
 import typer
 import torch
@@ -88,3 +91,23 @@ def _select_test_image(label, flipping):
     while labels[0].item() != label:
         images, labels = next(iter(dataloader))
     return images
+
+@main.command()
+def display(
+    run_path: Path = typer.Option(
+        ..., "-p", "--path", help="Path to all the experiments"
+    ),
+    experiment: str = typer.Option(
+        "", "-e", "--experiment", help="Name of the experiment"
+    )):
+    exp = []
+    if experiment != "":
+        for j in listdir(run_path / experiment):
+            exp_run = [experiment, j]
+            exp.append(exp_run)
+    else:
+        for i in listdir(run_path):
+            for j in listdir(run_path / i):
+                exp_run = [i, j]        
+                exp.append(exp_run)
+    print(pd.DataFrame(exp, columns = ['Experiment', 'Run']))
