@@ -1,13 +1,14 @@
 from torchvision import transforms as torch_transforms
 
 
-def transforms(*stages):
-    return torch_transforms.Compose(
-        [
-            torch_transforms.ToTensor(),
-            *(stage() for stage in stages),
-        ]
-    )
+def transforms(*stages, prob = 0):
+    transforms_list = [torch_transforms.ToTensor()]
+    for i in stages:
+        if i == flip: 
+            transforms_list.append(flip(prob))
+        else:
+            transforms_list.append(i())
+    return torch_transforms.Compose(transforms_list)
 
 
 def normalize():
@@ -17,13 +18,13 @@ def normalize():
     return torch_transforms.Normalize((0.5,), (0.5,))
 
 
-def flip():
+def flip(prob):
     """
     Flip a tensor both vertically and horizontally
     """
     return torch_transforms.Compose(
         [
-            torch_transforms.RandomHorizontalFlip(p=1.0),
-            torch_transforms.RandomVerticalFlip(p=1.0),
+            torch_transforms.RandomHorizontalFlip(p=prob),
+            torch_transforms.RandomVerticalFlip(p=prob),
         ]
     )
